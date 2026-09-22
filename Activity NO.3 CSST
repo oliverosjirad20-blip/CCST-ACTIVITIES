@@ -1,0 +1,923 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "authorship_tag": "ABX9TyO9ThXp1OKFOObttQJsFsdf",
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "ir",
+      "display_name": "R"
+    },
+    "language_info": {
+      "name": "R"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/oliverosjirad20-blip/CCST-ACTIVITIES/blob/main/Activity%20NO.3%20CSST\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "Table 1. Debate Arguments"
+      ],
+      "metadata": {
+        "id": "AyNdUdsZx4Ys"
+      }
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 75,
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 287
+        },
+        "id": "DYSYmTY1xwT8",
+        "outputId": "69ee2a52-f7a6-4d1d-b040-54de872e27b5"
+      },
+      "outputs": [
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/html": [
+              "<table class=\"dataframe\">\n",
+              "<caption>A data.frame: 6 × 4</caption>\n",
+              "<thead>\n",
+              "\t<tr><th scope=col>ArgumentsID</th><th scope=col>Position</th><th scope=col>Topic</th><th scope=col>Claim</th></tr>\n",
+              "\t<tr><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th></tr>\n",
+              "</thead>\n",
+              "<tbody>\n",
+              "\t<tr><td>A001</td><td>For    </td><td>Learning          </td><td>AI can provide students with learning support.                                                  </td></tr>\n",
+              "\t<tr><td>A002</td><td>For    </td><td>Productivity      </td><td>AI can help students complete routine academic task more efficiently                            </td></tr>\n",
+              "\t<tr><td>A003</td><td>For    </td><td>AI Literacy       </td><td>Allowing AI use can help students develop AI literacy.                                          </td></tr>\n",
+              "\t<tr><td>A004</td><td>Against</td><td>Academic Integrity</td><td>Undisclose AI generated work may create academic integrity concerns.                            </td></tr>\n",
+              "\t<tr><td>A005</td><td>Against</td><td>Dependency        </td><td>Excessive AI use may reduce students' independent problem-solving practice.                     </td></tr>\n",
+              "\t<tr><td>A006</td><td>Against</td><td>Assessment        </td><td>AI use may make it more difficult to determine whether submitted work reflects student learning.</td></tr>\n",
+              "</tbody>\n",
+              "</table>\n"
+            ],
+            "text/markdown": "\nA data.frame: 6 × 4\n\n| ArgumentsID &lt;chr&gt; | Position &lt;chr&gt; | Topic &lt;chr&gt; | Claim &lt;chr&gt; |\n|---|---|---|---|\n| A001 | For     | Learning           | AI can provide students with learning support.                                                   |\n| A002 | For     | Productivity       | AI can help students complete routine academic task more efficiently                             |\n| A003 | For     | AI Literacy        | Allowing AI use can help students develop AI literacy.                                           |\n| A004 | Against | Academic Integrity | Undisclose AI generated work may create academic integrity concerns.                             |\n| A005 | Against | Dependency         | Excessive AI use may reduce students' independent problem-solving practice.                      |\n| A006 | Against | Assessment         | AI use may make it more difficult to determine whether submitted work reflects student learning. |\n\n",
+            "text/latex": "A data.frame: 6 × 4\n\\begin{tabular}{llll}\n ArgumentsID & Position & Topic & Claim\\\\\n <chr> & <chr> & <chr> & <chr>\\\\\n\\hline\n\t A001 & For     & Learning           & AI can provide students with learning support.                                                  \\\\\n\t A002 & For     & Productivity       & AI can help students complete routine academic task more efficiently                            \\\\\n\t A003 & For     & AI Literacy        & Allowing AI use can help students develop AI literacy.                                          \\\\\n\t A004 & Against & Academic Integrity & Undisclose AI generated work may create academic integrity concerns.                            \\\\\n\t A005 & Against & Dependency         & Excessive AI use may reduce students' independent problem-solving practice.                     \\\\\n\t A006 & Against & Assessment         & AI use may make it more difficult to determine whether submitted work reflects student learning.\\\\\n\\end{tabular}\n",
+            "text/plain": [
+              "  ArgumentsID Position Topic             \n",
+              "1 A001        For      Learning          \n",
+              "2 A002        For      Productivity      \n",
+              "3 A003        For      AI Literacy       \n",
+              "4 A004        Against  Academic Integrity\n",
+              "5 A005        Against  Dependency        \n",
+              "6 A006        Against  Assessment        \n",
+              "  Claim                                                                                           \n",
+              "1 AI can provide students with learning support.                                                  \n",
+              "2 AI can help students complete routine academic task more efficiently                            \n",
+              "3 Allowing AI use can help students develop AI literacy.                                          \n",
+              "4 Undisclose AI generated work may create academic integrity concerns.                            \n",
+              "5 Excessive AI use may reduce students' independent problem-solving practice.                     \n",
+              "6 AI use may make it more difficult to determine whether submitted work reflects student learning."
+            ]
+          },
+          "metadata": {}
+        }
+      ],
+      "source": [
+        "table1 <- data.frame (\n",
+        "    ArgumentsID = c(\"A001\", \"A002\", \"A003\", \"A004\", \"A005\", \"A006\"),\n",
+        "    Position = c(\"For\", \"For\", \"For\", \"Against\", \"Against\", \"Against\"),\n",
+        "    Topic = c(\"Learning\", \"Productivity\", \"AI Literacy\", \"Academic Integrity\", \"Dependency\", \"Assessment\"),\n",
+        "    Claim = c(\"AI can provide students with learning support.\",\n",
+        "              \"AI can help students complete routine academic task more efficiently\",\n",
+        "              \"Allowing AI use can help students develop AI literacy.\",\n",
+        "              \"Undisclose AI generated work may create academic integrity concerns.\",\n",
+        "              \"Excessive AI use may reduce students' independent problem-solving practice.\",\n",
+        "              \"AI use may make it more difficult to determine whether submitted work reflects student learning.\")\n",
+        ")\n",
+        "table1"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "Table 2. Evidence"
+      ],
+      "metadata": {
+        "id": "eoK0ytc1015a"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "table2 <- data.frame (\n",
+        "    EvidenceID = c(\"E001\", \"E002\", \"E003\", \"E004\", \"E005\", \"E006\"),\n",
+        "    ArgumentsID = c(\"A001\", \"A002\", \"A003\", \"A004\", \"A005\", \"A006\"),\n",
+        "    EvidenceType = c(\"Research\", \"Research\", \"Policy\", \"Policy\", \"Research\", \"Research\"),\n",
+        "    Strength = c(\"Strong\", \"Moderate\", \"Strong\", \"Strong\", \"Moderate\", \"Strong\")\n",
+        "\n",
+        ")\n",
+        "table2"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 286
+        },
+        "id": "swhv_WDuzpMK",
+        "outputId": "f9262008-653c-4782-f67d-d6c6de91c34f"
+      },
+      "execution_count": null,
+      "outputs": [
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/html": [
+              "<table class=\"dataframe\">\n",
+              "<caption>A data.frame: 6 × 4</caption>\n",
+              "<thead>\n",
+              "\t<tr><th scope=col>EvidenceID</th><th scope=col>ArgumentsID</th><th scope=col>EvidenceType</th><th scope=col>Strength</th></tr>\n",
+              "\t<tr><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th></tr>\n",
+              "</thead>\n",
+              "<tbody>\n",
+              "\t<tr><td>E001</td><td>A001</td><td>Research</td><td>Strong  </td></tr>\n",
+              "\t<tr><td>E002</td><td>A002</td><td>Research</td><td>Moderate</td></tr>\n",
+              "\t<tr><td>E003</td><td>A003</td><td>Policy  </td><td>Strong  </td></tr>\n",
+              "\t<tr><td>E004</td><td>A004</td><td>Policy  </td><td>Strong  </td></tr>\n",
+              "\t<tr><td>E005</td><td>A005</td><td>Research</td><td>Moderate</td></tr>\n",
+              "\t<tr><td>E006</td><td>A006</td><td>Research</td><td>Strong  </td></tr>\n",
+              "</tbody>\n",
+              "</table>\n"
+            ],
+            "text/markdown": "\nA data.frame: 6 × 4\n\n| EvidenceID &lt;chr&gt; | ArgumentsID &lt;chr&gt; | EvidenceType &lt;chr&gt; | Strength &lt;chr&gt; |\n|---|---|---|---|\n| E001 | A001 | Research | Strong   |\n| E002 | A002 | Research | Moderate |\n| E003 | A003 | Policy   | Strong   |\n| E004 | A004 | Policy   | Strong   |\n| E005 | A005 | Research | Moderate |\n| E006 | A006 | Research | Strong   |\n\n",
+            "text/latex": "A data.frame: 6 × 4\n\\begin{tabular}{llll}\n EvidenceID & ArgumentsID & EvidenceType & Strength\\\\\n <chr> & <chr> & <chr> & <chr>\\\\\n\\hline\n\t E001 & A001 & Research & Strong  \\\\\n\t E002 & A002 & Research & Moderate\\\\\n\t E003 & A003 & Policy   & Strong  \\\\\n\t E004 & A004 & Policy   & Strong  \\\\\n\t E005 & A005 & Research & Moderate\\\\\n\t E006 & A006 & Research & Strong  \\\\\n\\end{tabular}\n",
+            "text/plain": [
+              "  EvidenceID ArgumentsID EvidenceType Strength\n",
+              "1 E001       A001        Research     Strong  \n",
+              "2 E002       A002        Research     Moderate\n",
+              "3 E003       A003        Policy       Strong  \n",
+              "4 E004       A004        Policy       Strong  \n",
+              "5 E005       A005        Research     Moderate\n",
+              "6 E006       A006        Research     Strong  "
+            ]
+          },
+          "metadata": {}
+        }
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "2. Count Arguments"
+      ],
+      "metadata": {
+        "id": "FAEIFebL4Fm4"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "table(table1$Position)\n",
+        "\n"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 69
+        },
+        "collapsed": true,
+        "id": "eczoCTmZ4JVo",
+        "outputId": "f0c53121-320c-4479-a524-f5049d250425"
+      },
+      "execution_count": null,
+      "outputs": [
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "\n",
+              "Against     For \n",
+              "      3       3 "
+            ]
+          },
+          "metadata": {}
+        }
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "3. Connect Table Arguments and Evidence"
+      ],
+      "metadata": {
+        "id": "t7gDt9u49QNn"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "knowledge_base <- merge (\n",
+        "    table1,\n",
+        "    table2,\n",
+        "    by = \"ArgumentsID\"\n",
+        ")\n",
+        "knowledge_base"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 353
+        },
+        "id": "XodoJssq9U6f",
+        "outputId": "264ade1c-2417-41cb-86b2-a85839e65af4"
+      },
+      "execution_count": 72,
+      "outputs": [
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/html": [
+              "<table class=\"dataframe\">\n",
+              "<caption>A data.frame: 7 × 7</caption>\n",
+              "<thead>\n",
+              "\t<tr><th scope=col>ArgumentsID</th><th scope=col>Position</th><th scope=col>Topic</th><th scope=col>Claim</th><th scope=col>EvidenceID</th><th scope=col>EvidenceType</th><th scope=col>Strength</th></tr>\n",
+              "\t<tr><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th></tr>\n",
+              "</thead>\n",
+              "<tbody>\n",
+              "\t<tr><td>A001</td><td>For    </td><td>Learning          </td><td>AI can provide students with learning support.                                                  </td><td>E001</td><td>Research</td><td>Strong  </td></tr>\n",
+              "\t<tr><td>A002</td><td>For    </td><td>Productivity      </td><td>AI can help students complete routine academic task more efficiently                            </td><td>E002</td><td>Research</td><td>Moderate</td></tr>\n",
+              "\t<tr><td>A003</td><td>For    </td><td>AI Literacy       </td><td>Allowing AI use can help students develop AI literacy.                                          </td><td>E003</td><td>Policy  </td><td>Strong  </td></tr>\n",
+              "\t<tr><td>A004</td><td>Against</td><td>Academic Integrity</td><td>Undisclose AI generated work may create academic integrity concerns.                            </td><td>E004</td><td>Policy  </td><td>Strong  </td></tr>\n",
+              "\t<tr><td>A005</td><td>Against</td><td>Dependency        </td><td>Excessive AI use may reduce students' independent problem-solving practice.                     </td><td>E005</td><td>Research</td><td>Moderate</td></tr>\n",
+              "\t<tr><td>A006</td><td>Against</td><td>Assessment        </td><td>AI use may make it more difficult to determine whether submitted work reflects student learning.</td><td>E006</td><td>Research</td><td>Strong  </td></tr>\n",
+              "\t<tr><td>A007</td><td>Against</td><td>Data Analyisys    </td><td>AI helps Data Analyst to make the data more concrete                                            </td><td>E007</td><td>Policy  </td><td>Strong  </td></tr>\n",
+              "</tbody>\n",
+              "</table>\n"
+            ],
+            "text/markdown": "\nA data.frame: 7 × 7\n\n| ArgumentsID &lt;chr&gt; | Position &lt;chr&gt; | Topic &lt;chr&gt; | Claim &lt;chr&gt; | EvidenceID &lt;chr&gt; | EvidenceType &lt;chr&gt; | Strength &lt;chr&gt; |\n|---|---|---|---|---|---|---|\n| A001 | For     | Learning           | AI can provide students with learning support.                                                   | E001 | Research | Strong   |\n| A002 | For     | Productivity       | AI can help students complete routine academic task more efficiently                             | E002 | Research | Moderate |\n| A003 | For     | AI Literacy        | Allowing AI use can help students develop AI literacy.                                           | E003 | Policy   | Strong   |\n| A004 | Against | Academic Integrity | Undisclose AI generated work may create academic integrity concerns.                             | E004 | Policy   | Strong   |\n| A005 | Against | Dependency         | Excessive AI use may reduce students' independent problem-solving practice.                      | E005 | Research | Moderate |\n| A006 | Against | Assessment         | AI use may make it more difficult to determine whether submitted work reflects student learning. | E006 | Research | Strong   |\n| A007 | Against | Data Analyisys     | AI helps Data Analyst to make the data more concrete                                             | E007 | Policy   | Strong   |\n\n",
+            "text/latex": "A data.frame: 7 × 7\n\\begin{tabular}{lllllll}\n ArgumentsID & Position & Topic & Claim & EvidenceID & EvidenceType & Strength\\\\\n <chr> & <chr> & <chr> & <chr> & <chr> & <chr> & <chr>\\\\\n\\hline\n\t A001 & For     & Learning           & AI can provide students with learning support.                                                   & E001 & Research & Strong  \\\\\n\t A002 & For     & Productivity       & AI can help students complete routine academic task more efficiently                             & E002 & Research & Moderate\\\\\n\t A003 & For     & AI Literacy        & Allowing AI use can help students develop AI literacy.                                           & E003 & Policy   & Strong  \\\\\n\t A004 & Against & Academic Integrity & Undisclose AI generated work may create academic integrity concerns.                             & E004 & Policy   & Strong  \\\\\n\t A005 & Against & Dependency         & Excessive AI use may reduce students' independent problem-solving practice.                      & E005 & Research & Moderate\\\\\n\t A006 & Against & Assessment         & AI use may make it more difficult to determine whether submitted work reflects student learning. & E006 & Research & Strong  \\\\\n\t A007 & Against & Data Analyisys     & AI helps Data Analyst to make the data more concrete                                             & E007 & Policy   & Strong  \\\\\n\\end{tabular}\n",
+            "text/plain": [
+              "  ArgumentsID Position Topic             \n",
+              "1 A001        For      Learning          \n",
+              "2 A002        For      Productivity      \n",
+              "3 A003        For      AI Literacy       \n",
+              "4 A004        Against  Academic Integrity\n",
+              "5 A005        Against  Dependency        \n",
+              "6 A006        Against  Assessment        \n",
+              "7 A007        Against  Data Analyisys    \n",
+              "  Claim                                                                                           \n",
+              "1 AI can provide students with learning support.                                                  \n",
+              "2 AI can help students complete routine academic task more efficiently                            \n",
+              "3 Allowing AI use can help students develop AI literacy.                                          \n",
+              "4 Undisclose AI generated work may create academic integrity concerns.                            \n",
+              "5 Excessive AI use may reduce students' independent problem-solving practice.                     \n",
+              "6 AI use may make it more difficult to determine whether submitted work reflects student learning.\n",
+              "7 AI helps Data Analyst to make the data more concrete                                            \n",
+              "  EvidenceID EvidenceType Strength\n",
+              "1 E001       Research     Strong  \n",
+              "2 E002       Research     Moderate\n",
+              "3 E003       Policy       Strong  \n",
+              "4 E004       Policy       Strong  \n",
+              "5 E005       Research     Moderate\n",
+              "6 E006       Research     Strong  \n",
+              "7 E007       Policy       Strong  "
+            ]
+          },
+          "metadata": {}
+        }
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "4. Convert Evidence Strength into a store"
+      ],
+      "metadata": {
+        "id": "xX8kxOTy-Hmu"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "get_score <- function(strength){\n",
+        "\n",
+        "  if(strength == \"Strong\"){\n",
+        "    return(3)\n",
+        "  } else if(strength == \"Moderate\") {\n",
+        "    return(2)\n",
+        "  } else if(strength == \"Weak\") {\n",
+        "    return(1)\n",
+        "  } else {\n",
+        "    return(0)\n",
+        "  }\n",
+        "}\n",
+        "get_score(\"Moderate\")"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 34
+        },
+        "id": "JDQlWwDg-Lum",
+        "outputId": "24a67c40-f0c8-4764-e78f-7ed59f0eb7b0"
+      },
+      "execution_count": null,
+      "outputs": [
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/html": [
+              "3"
+            ],
+            "text/markdown": "3",
+            "text/latex": "3",
+            "text/plain": [
+              "[1] 3"
+            ]
+          },
+          "metadata": {}
+        }
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "5. Add Evidence Scores"
+      ],
+      "metadata": {
+        "id": "IST8eMkH_hsH"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "knowledge_base$Evidence_Score <- sapply(\n",
+        "  knowledge_base$Strength,\n",
+        "  get_score\n",
+        ")\n",
+        "knowledge_base"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 286
+        },
+        "id": "RyilgxHx_g_e",
+        "outputId": "d0094a7e-6dfd-4327-c644-58f39154458e"
+      },
+      "execution_count": null,
+      "outputs": [
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/html": [
+              "<table class=\"dataframe\">\n",
+              "<caption>A data.frame: 6 × 8</caption>\n",
+              "<thead>\n",
+              "\t<tr><th scope=col>ArgumentsID</th><th scope=col>Position</th><th scope=col>Topic</th><th scope=col>Claim</th><th scope=col>EvidenceID</th><th scope=col>EvidenceType</th><th scope=col>Strength</th><th scope=col>Evidence_Score</th></tr>\n",
+              "\t<tr><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>\n",
+              "</thead>\n",
+              "<tbody>\n",
+              "\t<tr><td>A001</td><td>For    </td><td>Learning          </td><td>AI can provide students with learning support.                                                  </td><td>E001</td><td>Research</td><td>Strong  </td><td>3</td></tr>\n",
+              "\t<tr><td>A002</td><td>For    </td><td>Productivity      </td><td>AI can help students complete routine academic task more efficiently                            </td><td>E002</td><td>Research</td><td>Moderate</td><td>2</td></tr>\n",
+              "\t<tr><td>A003</td><td>For    </td><td>AI Literacy       </td><td>Allowing AI use can help students develop AI literacy.                                          </td><td>E003</td><td>Policy  </td><td>Strong  </td><td>3</td></tr>\n",
+              "\t<tr><td>A004</td><td>Against</td><td>Academic Integrity</td><td>Undisclose AI generated work may create academic integrity concerns.                            </td><td>E004</td><td>Policy  </td><td>Strong  </td><td>3</td></tr>\n",
+              "\t<tr><td>A005</td><td>Against</td><td>Dependency        </td><td>Excessive AI use may reduce students' independent problem-solving practice.                     </td><td>E005</td><td>Research</td><td>Moderate</td><td>2</td></tr>\n",
+              "\t<tr><td>A006</td><td>Against</td><td>Assessment        </td><td>AI use may make it more difficult to determine whether submitted work reflects student learning.</td><td>E006</td><td>Research</td><td>Strong  </td><td>3</td></tr>\n",
+              "</tbody>\n",
+              "</table>\n"
+            ],
+            "text/markdown": "\nA data.frame: 6 × 8\n\n| ArgumentsID &lt;chr&gt; | Position &lt;chr&gt; | Topic &lt;chr&gt; | Claim &lt;chr&gt; | EvidenceID &lt;chr&gt; | EvidenceType &lt;chr&gt; | Strength &lt;chr&gt; | Evidence_Score &lt;dbl&gt; |\n|---|---|---|---|---|---|---|---|\n| A001 | For     | Learning           | AI can provide students with learning support.                                                   | E001 | Research | Strong   | 3 |\n| A002 | For     | Productivity       | AI can help students complete routine academic task more efficiently                             | E002 | Research | Moderate | 2 |\n| A003 | For     | AI Literacy        | Allowing AI use can help students develop AI literacy.                                           | E003 | Policy   | Strong   | 3 |\n| A004 | Against | Academic Integrity | Undisclose AI generated work may create academic integrity concerns.                             | E004 | Policy   | Strong   | 3 |\n| A005 | Against | Dependency         | Excessive AI use may reduce students' independent problem-solving practice.                      | E005 | Research | Moderate | 2 |\n| A006 | Against | Assessment         | AI use may make it more difficult to determine whether submitted work reflects student learning. | E006 | Research | Strong   | 3 |\n\n",
+            "text/latex": "A data.frame: 6 × 8\n\\begin{tabular}{llllllll}\n ArgumentsID & Position & Topic & Claim & EvidenceID & EvidenceType & Strength & Evidence\\_Score\\\\\n <chr> & <chr> & <chr> & <chr> & <chr> & <chr> & <chr> & <dbl>\\\\\n\\hline\n\t A001 & For     & Learning           & AI can provide students with learning support.                                                   & E001 & Research & Strong   & 3\\\\\n\t A002 & For     & Productivity       & AI can help students complete routine academic task more efficiently                             & E002 & Research & Moderate & 2\\\\\n\t A003 & For     & AI Literacy        & Allowing AI use can help students develop AI literacy.                                           & E003 & Policy   & Strong   & 3\\\\\n\t A004 & Against & Academic Integrity & Undisclose AI generated work may create academic integrity concerns.                             & E004 & Policy   & Strong   & 3\\\\\n\t A005 & Against & Dependency         & Excessive AI use may reduce students' independent problem-solving practice.                      & E005 & Research & Moderate & 2\\\\\n\t A006 & Against & Assessment         & AI use may make it more difficult to determine whether submitted work reflects student learning. & E006 & Research & Strong   & 3\\\\\n\\end{tabular}\n",
+            "text/plain": [
+              "  ArgumentsID Position Topic             \n",
+              "1 A001        For      Learning          \n",
+              "2 A002        For      Productivity      \n",
+              "3 A003        For      AI Literacy       \n",
+              "4 A004        Against  Academic Integrity\n",
+              "5 A005        Against  Dependency        \n",
+              "6 A006        Against  Assessment        \n",
+              "  Claim                                                                                           \n",
+              "1 AI can provide students with learning support.                                                  \n",
+              "2 AI can help students complete routine academic task more efficiently                            \n",
+              "3 Allowing AI use can help students develop AI literacy.                                          \n",
+              "4 Undisclose AI generated work may create academic integrity concerns.                            \n",
+              "5 Excessive AI use may reduce students' independent problem-solving practice.                     \n",
+              "6 AI use may make it more difficult to determine whether submitted work reflects student learning.\n",
+              "  EvidenceID EvidenceType Strength Evidence_Score\n",
+              "1 E001       Research     Strong   3             \n",
+              "2 E002       Research     Moderate 2             \n",
+              "3 E003       Policy       Strong   3             \n",
+              "4 E004       Policy       Strong   3             \n",
+              "5 E005       Research     Moderate 2             \n",
+              "6 E006       Research     Strong   3             "
+            ]
+          },
+          "metadata": {}
+        }
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "6. Convert Evidence Score to Support\n"
+      ],
+      "metadata": {
+        "id": "kLRFa4r7Bdr-"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "classify_support <- function(score){\n",
+        "\n",
+        "  if(score == 3){\n",
+        "    return(\"Strongly Supported\")\n",
+        "  } else if(score == 2) {\n",
+        "    return(\"Moderately Supported\")\n",
+        "  } else if(score == 1) {\n",
+        "    return(\"Weakly Supported\")\n",
+        "  } else {\n",
+        "    return(\"No Supported\")\n",
+        "  }\n",
+        "}\n",
+        "classify_support(2)"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 34
+        },
+        "id": "4X8jwRj3BnZF",
+        "outputId": "69f556cc-e348-44c0-cf8b-4ab174667f53"
+      },
+      "execution_count": 32,
+      "outputs": [
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/html": [
+              "'Moderately Supported'"
+            ],
+            "text/markdown": "'Moderately Supported'",
+            "text/latex": "'Moderately Supported'",
+            "text/plain": [
+              "[1] \"Moderately Supported\""
+            ]
+          },
+          "metadata": {}
+        }
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "7. Add Evidence Support"
+      ],
+      "metadata": {
+        "id": "wIFi_nvGFCf0"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "knowledge_base$Evidence_Support <- sapply(\n",
+        "  knowledge_base$Evidence_Score,\n",
+        "  classify_support\n",
+        ")\n",
+        "knowledge_base"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 356
+        },
+        "id": "i7YgOmcEFHi0",
+        "outputId": "6f15b6b2-20ad-49e5-b289-a5710038ba7a"
+      },
+      "execution_count": 33,
+      "outputs": [
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/html": [
+              "<table class=\"dataframe\">\n",
+              "<caption>A data.frame: 6 × 9</caption>\n",
+              "<thead>\n",
+              "\t<tr><th scope=col>ArgumentsID</th><th scope=col>Position</th><th scope=col>Topic</th><th scope=col>Claim</th><th scope=col>EvidenceID</th><th scope=col>EvidenceType</th><th scope=col>Strength</th><th scope=col>Evidence_Score</th><th scope=col>Evidence_Support</th></tr>\n",
+              "\t<tr><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;chr&gt;</th></tr>\n",
+              "</thead>\n",
+              "<tbody>\n",
+              "\t<tr><td>A001</td><td>For    </td><td>Learning          </td><td>AI can provide students with learning support.                                                  </td><td>E001</td><td>Research</td><td>Strong  </td><td>3</td><td>Strongly Supported  </td></tr>\n",
+              "\t<tr><td>A002</td><td>For    </td><td>Productivity      </td><td>AI can help students complete routine academic task more efficiently                            </td><td>E002</td><td>Research</td><td>Moderate</td><td>2</td><td>Moderately Supported</td></tr>\n",
+              "\t<tr><td>A003</td><td>For    </td><td>AI Literacy       </td><td>Allowing AI use can help students develop AI literacy.                                          </td><td>E003</td><td>Policy  </td><td>Strong  </td><td>3</td><td>Strongly Supported  </td></tr>\n",
+              "\t<tr><td>A004</td><td>Against</td><td>Academic Integrity</td><td>Undisclose AI generated work may create academic integrity concerns.                            </td><td>E004</td><td>Policy  </td><td>Strong  </td><td>3</td><td>Strongly Supported  </td></tr>\n",
+              "\t<tr><td>A005</td><td>Against</td><td>Dependency        </td><td>Excessive AI use may reduce students' independent problem-solving practice.                     </td><td>E005</td><td>Research</td><td>Moderate</td><td>2</td><td>Moderately Supported</td></tr>\n",
+              "\t<tr><td>A006</td><td>Against</td><td>Assessment        </td><td>AI use may make it more difficult to determine whether submitted work reflects student learning.</td><td>E006</td><td>Research</td><td>Strong  </td><td>3</td><td>Strongly Supported  </td></tr>\n",
+              "</tbody>\n",
+              "</table>\n"
+            ],
+            "text/markdown": "\nA data.frame: 6 × 9\n\n| ArgumentsID &lt;chr&gt; | Position &lt;chr&gt; | Topic &lt;chr&gt; | Claim &lt;chr&gt; | EvidenceID &lt;chr&gt; | EvidenceType &lt;chr&gt; | Strength &lt;chr&gt; | Evidence_Score &lt;dbl&gt; | Evidence_Support &lt;chr&gt; |\n|---|---|---|---|---|---|---|---|---|\n| A001 | For     | Learning           | AI can provide students with learning support.                                                   | E001 | Research | Strong   | 3 | Strongly Supported   |\n| A002 | For     | Productivity       | AI can help students complete routine academic task more efficiently                             | E002 | Research | Moderate | 2 | Moderately Supported |\n| A003 | For     | AI Literacy        | Allowing AI use can help students develop AI literacy.                                           | E003 | Policy   | Strong   | 3 | Strongly Supported   |\n| A004 | Against | Academic Integrity | Undisclose AI generated work may create academic integrity concerns.                             | E004 | Policy   | Strong   | 3 | Strongly Supported   |\n| A005 | Against | Dependency         | Excessive AI use may reduce students' independent problem-solving practice.                      | E005 | Research | Moderate | 2 | Moderately Supported |\n| A006 | Against | Assessment         | AI use may make it more difficult to determine whether submitted work reflects student learning. | E006 | Research | Strong   | 3 | Strongly Supported   |\n\n",
+            "text/latex": "A data.frame: 6 × 9\n\\begin{tabular}{lllllllll}\n ArgumentsID & Position & Topic & Claim & EvidenceID & EvidenceType & Strength & Evidence\\_Score & Evidence\\_Support\\\\\n <chr> & <chr> & <chr> & <chr> & <chr> & <chr> & <chr> & <dbl> & <chr>\\\\\n\\hline\n\t A001 & For     & Learning           & AI can provide students with learning support.                                                   & E001 & Research & Strong   & 3 & Strongly Supported  \\\\\n\t A002 & For     & Productivity       & AI can help students complete routine academic task more efficiently                             & E002 & Research & Moderate & 2 & Moderately Supported\\\\\n\t A003 & For     & AI Literacy        & Allowing AI use can help students develop AI literacy.                                           & E003 & Policy   & Strong   & 3 & Strongly Supported  \\\\\n\t A004 & Against & Academic Integrity & Undisclose AI generated work may create academic integrity concerns.                             & E004 & Policy   & Strong   & 3 & Strongly Supported  \\\\\n\t A005 & Against & Dependency         & Excessive AI use may reduce students' independent problem-solving practice.                      & E005 & Research & Moderate & 2 & Moderately Supported\\\\\n\t A006 & Against & Assessment         & AI use may make it more difficult to determine whether submitted work reflects student learning. & E006 & Research & Strong   & 3 & Strongly Supported  \\\\\n\\end{tabular}\n",
+            "text/plain": [
+              "  ArgumentsID Position Topic             \n",
+              "1 A001        For      Learning          \n",
+              "2 A002        For      Productivity      \n",
+              "3 A003        For      AI Literacy       \n",
+              "4 A004        Against  Academic Integrity\n",
+              "5 A005        Against  Dependency        \n",
+              "6 A006        Against  Assessment        \n",
+              "  Claim                                                                                           \n",
+              "1 AI can provide students with learning support.                                                  \n",
+              "2 AI can help students complete routine academic task more efficiently                            \n",
+              "3 Allowing AI use can help students develop AI literacy.                                          \n",
+              "4 Undisclose AI generated work may create academic integrity concerns.                            \n",
+              "5 Excessive AI use may reduce students' independent problem-solving practice.                     \n",
+              "6 AI use may make it more difficult to determine whether submitted work reflects student learning.\n",
+              "  EvidenceID EvidenceType Strength Evidence_Score Evidence_Support    \n",
+              "1 E001       Research     Strong   3              Strongly Supported  \n",
+              "2 E002       Research     Moderate 2              Moderately Supported\n",
+              "3 E003       Policy       Strong   3              Strongly Supported  \n",
+              "4 E004       Policy       Strong   3              Strongly Supported  \n",
+              "5 E005       Research     Moderate 2              Moderately Supported\n",
+              "6 E006       Research     Strong   3              Strongly Supported  "
+            ]
+          },
+          "metadata": {}
+        }
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "8. Search by Topic"
+      ],
+      "metadata": {
+        "id": "R42wKcyfFJtk"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "search_topic <- function(topic){\n",
+        "\n",
+        "  result <- subset(\n",
+        "    knowledge_base,\n",
+        "    Topic == topic\n",
+        "  )\n",
+        "  if(nrow(result) == 0){\n",
+        "    return(\"Topic not found\")\n",
+        "  }else{\n",
+        "    return (result)\n",
+        "  }\n",
+        "}"
+      ],
+      "metadata": {
+        "id": "HWd5tHa0FLWU"
+      },
+      "execution_count": 37,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "search_topic(\"Learning\")"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 130
+        },
+        "id": "xMFQJxWBFMyU",
+        "outputId": "ce731a8b-20a5-4594-86a1-bf6533ab913d"
+      },
+      "execution_count": 38,
+      "outputs": [
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/html": [
+              "<table class=\"dataframe\">\n",
+              "<caption>A data.frame: 1 × 9</caption>\n",
+              "<thead>\n",
+              "\t<tr><th></th><th scope=col>ArgumentsID</th><th scope=col>Position</th><th scope=col>Topic</th><th scope=col>Claim</th><th scope=col>EvidenceID</th><th scope=col>EvidenceType</th><th scope=col>Strength</th><th scope=col>Evidence_Score</th><th scope=col>Evidence_Support</th></tr>\n",
+              "\t<tr><th></th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;chr&gt;</th></tr>\n",
+              "</thead>\n",
+              "<tbody>\n",
+              "\t<tr><th scope=row>1</th><td>A001</td><td>For</td><td>Learning</td><td>AI can provide students with learning support.</td><td>E001</td><td>Research</td><td>Strong</td><td>3</td><td>Strongly Supported</td></tr>\n",
+              "</tbody>\n",
+              "</table>\n"
+            ],
+            "text/markdown": "\nA data.frame: 1 × 9\n\n| <!--/--> | ArgumentsID &lt;chr&gt; | Position &lt;chr&gt; | Topic &lt;chr&gt; | Claim &lt;chr&gt; | EvidenceID &lt;chr&gt; | EvidenceType &lt;chr&gt; | Strength &lt;chr&gt; | Evidence_Score &lt;dbl&gt; | Evidence_Support &lt;chr&gt; |\n|---|---|---|---|---|---|---|---|---|---|\n| 1 | A001 | For | Learning | AI can provide students with learning support. | E001 | Research | Strong | 3 | Strongly Supported |\n\n",
+            "text/latex": "A data.frame: 1 × 9\n\\begin{tabular}{r|lllllllll}\n  & ArgumentsID & Position & Topic & Claim & EvidenceID & EvidenceType & Strength & Evidence\\_Score & Evidence\\_Support\\\\\n  & <chr> & <chr> & <chr> & <chr> & <chr> & <chr> & <chr> & <dbl> & <chr>\\\\\n\\hline\n\t1 & A001 & For & Learning & AI can provide students with learning support. & E001 & Research & Strong & 3 & Strongly Supported\\\\\n\\end{tabular}\n",
+            "text/plain": [
+              "  ArgumentsID Position Topic    Claim                                         \n",
+              "1 A001        For      Learning AI can provide students with learning support.\n",
+              "  EvidenceID EvidenceType Strength Evidence_Score Evidence_Support  \n",
+              "1 E001       Research     Strong   3              Strongly Supported"
+            ]
+          },
+          "metadata": {}
+        }
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "More Arguments / Additional Topic"
+      ],
+      "metadata": {
+        "id": "z2R7KVs8Jm2z"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "add_argument <- function(ArgumentsID, Position, Topic, Claim){\n",
+        "  table1 <<- rbind(\n",
+        "    table1,\n",
+        "    data.frame(ArgumentsID, Position, Topic, Claim)\n",
+        "  )\n",
+        "}\n",
+        "add_argument(\"A007\", \"Against\", \"Data Analyisys\", \"AI helps Data Analyst to make the data more concrete\")"
+      ],
+      "metadata": {
+        "id": "XErHjWx5JrES"
+      },
+      "execution_count": 43,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "table1"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 318
+        },
+        "id": "vEdbsz3gKrf6",
+        "outputId": "2d244c14-f7fa-49a5-d131-1ecd22142ea6"
+      },
+      "execution_count": 45,
+      "outputs": [
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/html": [
+              "<table class=\"dataframe\">\n",
+              "<caption>A data.frame: 7 × 4</caption>\n",
+              "<thead>\n",
+              "\t<tr><th scope=col>ArgumentsID</th><th scope=col>Position</th><th scope=col>Topic</th><th scope=col>Claim</th></tr>\n",
+              "\t<tr><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th></tr>\n",
+              "</thead>\n",
+              "<tbody>\n",
+              "\t<tr><td>A001</td><td>For    </td><td>Learning          </td><td>AI can provide students with learning support.                                                  </td></tr>\n",
+              "\t<tr><td>A002</td><td>For    </td><td>Productivity      </td><td>AI can help students complete routine academic task more efficiently                            </td></tr>\n",
+              "\t<tr><td>A003</td><td>For    </td><td>AI Literacy       </td><td>Allowing AI use can help students develop AI literacy.                                          </td></tr>\n",
+              "\t<tr><td>A004</td><td>Against</td><td>Academic Integrity</td><td>Undisclose AI generated work may create academic integrity concerns.                            </td></tr>\n",
+              "\t<tr><td>A005</td><td>Against</td><td>Dependency        </td><td>Excessive AI use may reduce students' independent problem-solving practice.                     </td></tr>\n",
+              "\t<tr><td>A006</td><td>Against</td><td>Assessment        </td><td>AI use may make it more difficult to determine whether submitted work reflects student learning.</td></tr>\n",
+              "\t<tr><td>A007</td><td>Against</td><td>Data Analyisys    </td><td>AI helps Data Analyst to make the data more concrete                                            </td></tr>\n",
+              "</tbody>\n",
+              "</table>\n"
+            ],
+            "text/markdown": "\nA data.frame: 7 × 4\n\n| ArgumentsID &lt;chr&gt; | Position &lt;chr&gt; | Topic &lt;chr&gt; | Claim &lt;chr&gt; |\n|---|---|---|---|\n| A001 | For     | Learning           | AI can provide students with learning support.                                                   |\n| A002 | For     | Productivity       | AI can help students complete routine academic task more efficiently                             |\n| A003 | For     | AI Literacy        | Allowing AI use can help students develop AI literacy.                                           |\n| A004 | Against | Academic Integrity | Undisclose AI generated work may create academic integrity concerns.                             |\n| A005 | Against | Dependency         | Excessive AI use may reduce students' independent problem-solving practice.                      |\n| A006 | Against | Assessment         | AI use may make it more difficult to determine whether submitted work reflects student learning. |\n| A007 | Against | Data Analyisys     | AI helps Data Analyst to make the data more concrete                                             |\n\n",
+            "text/latex": "A data.frame: 7 × 4\n\\begin{tabular}{llll}\n ArgumentsID & Position & Topic & Claim\\\\\n <chr> & <chr> & <chr> & <chr>\\\\\n\\hline\n\t A001 & For     & Learning           & AI can provide students with learning support.                                                  \\\\\n\t A002 & For     & Productivity       & AI can help students complete routine academic task more efficiently                            \\\\\n\t A003 & For     & AI Literacy        & Allowing AI use can help students develop AI literacy.                                          \\\\\n\t A004 & Against & Academic Integrity & Undisclose AI generated work may create academic integrity concerns.                            \\\\\n\t A005 & Against & Dependency         & Excessive AI use may reduce students' independent problem-solving practice.                     \\\\\n\t A006 & Against & Assessment         & AI use may make it more difficult to determine whether submitted work reflects student learning.\\\\\n\t A007 & Against & Data Analyisys     & AI helps Data Analyst to make the data more concrete                                            \\\\\n\\end{tabular}\n",
+            "text/plain": [
+              "  ArgumentsID Position Topic             \n",
+              "1 A001        For      Learning          \n",
+              "2 A002        For      Productivity      \n",
+              "3 A003        For      AI Literacy       \n",
+              "4 A004        Against  Academic Integrity\n",
+              "5 A005        Against  Dependency        \n",
+              "6 A006        Against  Assessment        \n",
+              "7 A007        Against  Data Analyisys    \n",
+              "  Claim                                                                                           \n",
+              "1 AI can provide students with learning support.                                                  \n",
+              "2 AI can help students complete routine academic task more efficiently                            \n",
+              "3 Allowing AI use can help students develop AI literacy.                                          \n",
+              "4 Undisclose AI generated work may create academic integrity concerns.                            \n",
+              "5 Excessive AI use may reduce students' independent problem-solving practice.                     \n",
+              "6 AI use may make it more difficult to determine whether submitted work reflects student learning.\n",
+              "7 AI helps Data Analyst to make the data more concrete                                            "
+            ]
+          },
+          "metadata": {}
+        }
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "More Evidence Records / Additional Topic"
+      ],
+      "metadata": {
+        "id": "UPGTaZ_PKvMy"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "add_evidence <- function(EvidenceID, ArgumentsID, EvidenceType, Strength){\n",
+        "  table2 <<- rbind(\n",
+        "    table2,\n",
+        "    data.frame(EvidenceID, ArgumentsID, EvidenceType, Strength)\n",
+        "  )\n",
+        "}\n",
+        "add_evidence(\"E007\", \"A007\", \"Policy\", \"Strong\")"
+      ],
+      "metadata": {
+        "id": "h5qj5pGRK1HK"
+      },
+      "execution_count": 65,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "table2"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 318
+        },
+        "id": "6BR5BQg0LQd6",
+        "outputId": "7f1eafb5-1774-494a-e247-358f2fc6a682"
+      },
+      "execution_count": 66,
+      "outputs": [
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/html": [
+              "<table class=\"dataframe\">\n",
+              "<caption>A data.frame: 7 × 4</caption>\n",
+              "<thead>\n",
+              "\t<tr><th scope=col>EvidenceID</th><th scope=col>ArgumentsID</th><th scope=col>EvidenceType</th><th scope=col>Strength</th></tr>\n",
+              "\t<tr><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th></tr>\n",
+              "</thead>\n",
+              "<tbody>\n",
+              "\t<tr><td>E001</td><td>A001</td><td>Research</td><td>Strong  </td></tr>\n",
+              "\t<tr><td>E002</td><td>A002</td><td>Research</td><td>Moderate</td></tr>\n",
+              "\t<tr><td>E003</td><td>A003</td><td>Policy  </td><td>Strong  </td></tr>\n",
+              "\t<tr><td>E004</td><td>A004</td><td>Policy  </td><td>Strong  </td></tr>\n",
+              "\t<tr><td>E005</td><td>A005</td><td>Research</td><td>Moderate</td></tr>\n",
+              "\t<tr><td>E006</td><td>A006</td><td>Research</td><td>Strong  </td></tr>\n",
+              "\t<tr><td>E007</td><td>A007</td><td>Policy  </td><td>Strong  </td></tr>\n",
+              "</tbody>\n",
+              "</table>\n"
+            ],
+            "text/markdown": "\nA data.frame: 7 × 4\n\n| EvidenceID &lt;chr&gt; | ArgumentsID &lt;chr&gt; | EvidenceType &lt;chr&gt; | Strength &lt;chr&gt; |\n|---|---|---|---|\n| E001 | A001 | Research | Strong   |\n| E002 | A002 | Research | Moderate |\n| E003 | A003 | Policy   | Strong   |\n| E004 | A004 | Policy   | Strong   |\n| E005 | A005 | Research | Moderate |\n| E006 | A006 | Research | Strong   |\n| E007 | A007 | Policy   | Strong   |\n\n",
+            "text/latex": "A data.frame: 7 × 4\n\\begin{tabular}{llll}\n EvidenceID & ArgumentsID & EvidenceType & Strength\\\\\n <chr> & <chr> & <chr> & <chr>\\\\\n\\hline\n\t E001 & A001 & Research & Strong  \\\\\n\t E002 & A002 & Research & Moderate\\\\\n\t E003 & A003 & Policy   & Strong  \\\\\n\t E004 & A004 & Policy   & Strong  \\\\\n\t E005 & A005 & Research & Moderate\\\\\n\t E006 & A006 & Research & Strong  \\\\\n\t E007 & A007 & Policy   & Strong  \\\\\n\\end{tabular}\n",
+            "text/plain": [
+              "  EvidenceID ArgumentsID EvidenceType Strength\n",
+              "1 E001       A001        Research     Strong  \n",
+              "2 E002       A002        Research     Moderate\n",
+              "3 E003       A003        Policy       Strong  \n",
+              "4 E004       A004        Policy       Strong  \n",
+              "5 E005       A005        Research     Moderate\n",
+              "6 E006       A006        Research     Strong  \n",
+              "7 E007       A007        Policy       Strong  "
+            ]
+          },
+          "metadata": {}
+        }
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "Evidence stregnth visualization"
+      ],
+      "metadata": {
+        "id": "2OghH6a3MIqp"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "evidence_strength <- table(table2$Strength)\n",
+        "\n",
+        "barplot(\n",
+        "  evidence_strength,\n",
+        "  main = \"Evidence Strength Visualization\",\n",
+        "  xlab = \"Strength Level\",\n",
+        "  ylab = \"Strength Value\"\n",
+        ")"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 437
+        },
+        "id": "pO62b3RKMWKR",
+        "outputId": "a970e3a0-6b8e-44a9-845d-5554bfb7e891"
+      },
+      "execution_count": 73,
+      "outputs": [
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "Plot with title “Evidence Strength Visualization”"
+            ],
+            "image/png": "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\nspYOcmm9fZM+uYxXjp+KePrZGRsU+G/6g302Fasl3bXMcPH0eWtfZZs5tpWrpzznsZNRKT9X\nH20a+1rrVq1atWrTb/5pwwus2nh2dotizi4ly9dp3vbd5TeenVbRxyckfXhq7R1s0zWKmqmC\nyo4to/X29U7eNf+eTLNrDjyza9LI3JizzKmZf1d3rRBq/OFtWzZv2RutCqEp2tG/jZmbIGc0\nMpNJtStaqUnXwaOn/rB6/8XLm0dU0gkh1LhjgcfjhVDsHZMuDDDevnbLmPJ7cf8ePqFP+1SG\nC2cvJLaerlyzZmWSpgdMt0+depB8/mTWX6Lp7ur33vnxsl4Vis5n0KLvXi+V9tPpuVZqbXfY\nVq9TLfFtZ7hw8EhY6jnysMOBFwxCCKHY1qhTPT99DQr+8wg74IXpavTqWUknhDBe2zL9u+3h\nJiEUh6Z9u5e2+Pel9fHzS7x3lxqz7bsFJ2MTfxwfvHDayjvG9AuX79ipio0ihDDdXzPvl5Ck\n6SdT6Mo+XkXdfSrXenVgwOX0v2SF1rdLtxq2ihBCfbz524VnkqIo/nzArO+37ti5c+fuk1r3\nMroXWLW2fPNXSxhVVQhTxJZRnd9ZuO96THLdGSIvbpk+ePLOBFUIodjWalIv8dR1TfJNdI2h\n127EZeJVZMeW8WnatEzyrpk371hM4o/jzi6YuvK2mefK6pizzuFV/+6eWiHU6H++mbUrzCSE\npkRn/xYZXbCSStTuLzu/Wt27aAHP/n8+eFou2sKVK5dIfH/aOThohNC6e5dJvPWiKXTTih2P\nEhdNOL/wq+XpX/LTo5Sm8HsPEje4+uDvKfMOJkWv6XFkFg+OGq8tG/ruqltGIRS7yu8vnd3+\nmbnbLKw087tD49mtn5+zIoRQY7b/37R/HiU3YtiOyTO3xahCCMWl1YBu7nxSIh/hUCyQgYRd\nH/gW+iSjI122fnNOrXsr6cR1XbVevapOO31Crz+zY5cQQijOLft2LWXl08Cm7uBhDed/sj9G\nVWOPfNGyflCvNr6aq9t/33jbpZTj41tPVCFMpuTPR23VEZP6L+3x03WDKXzzyMZN9/VrU1Z7\n68Afv+28HqOKcEONsa18snoSvLbS8K8GB3T84bJejQkc36z+4d6tvAwXtv/x99loVQhNwWbj\nx3VwEUI8/6ptao6a98Ff7WefilXVqJNLhzUNGOlcpETRArqEyHuh4bFJ55krdhWGfjHIRyOE\n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\nc9+5jArTd4XrxtqLuq6z4s0lH5jPz+6mE0Sr0K8umMv2Mhx4tblG0+qNQ+UmwswXF4TbqGz6\nL0qRSo9SOUcsv1o22WXY+ZKvWu01datBluXrv49zUal9pkTllW42xs7uYS0KqnoT1xfdriU2\noXPjTaUHFWx6xlNVWmYlqpuxq+5ETDEftNeKjiN+zSzdWjxfZ9F1Vpy5Bt8DM3bAQ4Jn7AA8\naNbtX9t0tMOCT79YvDpq8cfrv/9IENXWnm3DHh/99NRJ/Zva3u7BMG27Af29ym41mM9FRsZJ\nNsHC6TXLz5XtI+U51Vfl7991xDCxf/GjZ9qOfXs5lxWrdm/gppai0zMlQTDFHjiUKdv3C3+k\n7OE1TZPxk3u/tXNdNWeh6zIiwrfscTutdyMvtXQiPfPuXp2t/kT8hw0Pmv7qpjVRORFD7YTS\n+TqLLiOH+aoE85nqDmesBx4SdHYAtUDvHfbiV2Evzi1MO3Nw986dO3ds27Rpw9f/XrfwqxEL\nI5eMbVzV0CRqPBu633iExJx0PsksZW1+f+zmCrtapKblyYKDIAiCqHNyLh8X1RqNIEhmSRAE\n6UpyqqR2a+ChLVeJbUBLH/W6K7c9A1HnUt/hRpmiVqcVS8q8C9WfiFPjocM7vPWfyDVROUMH\n2xXnulyr4FFDvFSCYKj2cPu7axeAuoZn7ADUHlHv2rz74Mmvf7408kTSub+nddQl/PrS66sz\nqn5QTaPVlktostFolNU+z0flFFSQvXacU+muoljVLKBsNBhlQasrX6og6i0tqn2ftOoy70IN\nTkTlM2REZ13mxtVbr5fM1+Vah44a5C7W7HAADweCHYAHTjYZzRU+tPDqO/2/A+3l7IN7Y0w1\nLEjlWM9JJaWnZaj0FVhoazK+iVY2VqKcez23/FSbdDX1Af9CRE1OROU1eERXi4yNa7blFuc6\nu/DRA13Emh4O4KFAhwfwIEkXvo9o5OgY/HlsxWgn5+fkGAXRytqqpjNMmoCgQCshf0/U3vzy\ndaQdWr/lTEaN0qHau5G3Wko+czb7xiyh8eTmrckVm/dPqtGJqDwHjeihz4j8c3dK5KoteU79\nR/UrmYu79+8BgEIQ7AA8SCqv4GBfOW/fzJFTlx4vnzkMV3Z/OfmdDfm6gCGDW2oEQVRrNKJ0\n7Wr67abORMdHnxziLl9a+ubH+3JKkpkxceW/Iwb26T99V01+KkLdKDS0sbpw63eLThUWf5If\nPfeVRefL3ZqtUUvuUc1ORHR/bESI5dWo1bNWbc2tN2BUH/s7OhzAQ4CXJwA8UOrGzy1Zlhgx\nfs6CsW2/f9Gnub+Xk6WQfzXhzJlLOZJtwNj5y18P0gmCoGnepoVu8c6vRoWeDPDqPePHF9pU\nVproMOCTRS9ED/9iZmiLjX1CWzoWxO/euCNeDvy/1e8EW9akPZp2U6YPW/LEite7t93Sv2sD\n07ltm1K6/3dSi7fmXijdo0YtqRHDpmkdA9+7eT5SdHh87qbp3Wp0IqLrgBG9rCb8OO+SyW3C\n6F429/F7AKAMBDsAD5jKo/+nO+Oe2rRy1ca90XHJGXlGdb2mIeOGdAx9POLRtq4lr6eqfCcv\nWJzy7k/Hcq1dG3nZi4Jo2SCwR7BdM+ebbzSIrn1n744esGTRyi3HExIva116Pv/1vKfGhfkW\nL19S2VGivkFgj2DLABeVIAiCynPEj3tcun25eNOJtNS8Rr1nbn5mmP7bLm8JWp2m5i25ucyK\nRFvfDj2CXSu5wSvaW2prcCIlO9cb8PQzYdn7jQ79n+xxU2Cr7nuw9g7qEdzQ34nbNICyibJ8\nt+ukA4BCSEajrNWWLUpXuHGyb//F7jOOHnyzhfp2xwHA/xgu3gA81OQrS0d42Nh3efdQXskn\nhnOLv1yTpmrcp48/qQ5AHcOMHYCHm5yz843QRz86Inl1Duve1K4wYe+mnfFSq5dWR83q7cwC\ncADqFoIdgIeenHtuw+JFq7afTMo06JwatuoxZOKEfn42pDoAdQ7BDgAAQCF4xg4AAEAhCHYA\nAAAKQbADAABQCIIdAACAQhDsAAAAFIJgBwAAoBAEOwAAAIUg2AEAACgEwQ4AAEAhCHYAAAAK\nQbADAABQCIIdAACAQhDsAAAAFIJgBwAAoBAEOwAAAIUg2AEAACgEwQ4AAEAhCHYAAAAKQbAD\nAABQCIIdAACAQhDsAAAAFIJgBwAAoBAEOwAAAIUg2AEAACgEwQ4AAEAhCHYAAAAK8f/gnkxd\nZwa8xAAAAABJRU5ErkJggg=="
+          },
+          "metadata": {
+            "image/png": {
+              "width": 420,
+              "height": 420
+            }
+          }
+        }
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "A formatted final debate report"
+      ],
+      "metadata": {
+        "id": "BPDh1blNNBOh"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "knowledge_base"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 353
+        },
+        "id": "QkNqlwMRNGTp",
+        "outputId": "b00624d2-8c3c-4d5b-9006-c1121923bd41"
+      },
+      "execution_count": 74,
+      "outputs": [
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/html": [
+              "<table class=\"dataframe\">\n",
+              "<caption>A data.frame: 7 × 7</caption>\n",
+              "<thead>\n",
+              "\t<tr><th scope=col>ArgumentsID</th><th scope=col>Position</th><th scope=col>Topic</th><th scope=col>Claim</th><th scope=col>EvidenceID</th><th scope=col>EvidenceType</th><th scope=col>Strength</th></tr>\n",
+              "\t<tr><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th></tr>\n",
+              "</thead>\n",
+              "<tbody>\n",
+              "\t<tr><td>A001</td><td>For    </td><td>Learning          </td><td>AI can provide students with learning support.                                                  </td><td>E001</td><td>Research</td><td>Strong  </td></tr>\n",
+              "\t<tr><td>A002</td><td>For    </td><td>Productivity      </td><td>AI can help students complete routine academic task more efficiently                            </td><td>E002</td><td>Research</td><td>Moderate</td></tr>\n",
+              "\t<tr><td>A003</td><td>For    </td><td>AI Literacy       </td><td>Allowing AI use can help students develop AI literacy.                                          </td><td>E003</td><td>Policy  </td><td>Strong  </td></tr>\n",
+              "\t<tr><td>A004</td><td>Against</td><td>Academic Integrity</td><td>Undisclose AI generated work may create academic integrity concerns.                            </td><td>E004</td><td>Policy  </td><td>Strong  </td></tr>\n",
+              "\t<tr><td>A005</td><td>Against</td><td>Dependency        </td><td>Excessive AI use may reduce students' independent problem-solving practice.                     </td><td>E005</td><td>Research</td><td>Moderate</td></tr>\n",
+              "\t<tr><td>A006</td><td>Against</td><td>Assessment        </td><td>AI use may make it more difficult to determine whether submitted work reflects student learning.</td><td>E006</td><td>Research</td><td>Strong  </td></tr>\n",
+              "\t<tr><td>A007</td><td>Against</td><td>Data Analyisys    </td><td>AI helps Data Analyst to make the data more concrete                                            </td><td>E007</td><td>Policy  </td><td>Strong  </td></tr>\n",
+              "</tbody>\n",
+              "</table>\n"
+            ],
+            "text/markdown": "\nA data.frame: 7 × 7\n\n| ArgumentsID &lt;chr&gt; | Position &lt;chr&gt; | Topic &lt;chr&gt; | Claim &lt;chr&gt; | EvidenceID &lt;chr&gt; | EvidenceType &lt;chr&gt; | Strength &lt;chr&gt; |\n|---|---|---|---|---|---|---|\n| A001 | For     | Learning           | AI can provide students with learning support.                                                   | E001 | Research | Strong   |\n| A002 | For     | Productivity       | AI can help students complete routine academic task more efficiently                             | E002 | Research | Moderate |\n| A003 | For     | AI Literacy        | Allowing AI use can help students develop AI literacy.                                           | E003 | Policy   | Strong   |\n| A004 | Against | Academic Integrity | Undisclose AI generated work may create academic integrity concerns.                             | E004 | Policy   | Strong   |\n| A005 | Against | Dependency         | Excessive AI use may reduce students' independent problem-solving practice.                      | E005 | Research | Moderate |\n| A006 | Against | Assessment         | AI use may make it more difficult to determine whether submitted work reflects student learning. | E006 | Research | Strong   |\n| A007 | Against | Data Analyisys     | AI helps Data Analyst to make the data more concrete                                             | E007 | Policy   | Strong   |\n\n",
+            "text/latex": "A data.frame: 7 × 7\n\\begin{tabular}{lllllll}\n ArgumentsID & Position & Topic & Claim & EvidenceID & EvidenceType & Strength\\\\\n <chr> & <chr> & <chr> & <chr> & <chr> & <chr> & <chr>\\\\\n\\hline\n\t A001 & For     & Learning           & AI can provide students with learning support.                                                   & E001 & Research & Strong  \\\\\n\t A002 & For     & Productivity       & AI can help students complete routine academic task more efficiently                             & E002 & Research & Moderate\\\\\n\t A003 & For     & AI Literacy        & Allowing AI use can help students develop AI literacy.                                           & E003 & Policy   & Strong  \\\\\n\t A004 & Against & Academic Integrity & Undisclose AI generated work may create academic integrity concerns.                             & E004 & Policy   & Strong  \\\\\n\t A005 & Against & Dependency         & Excessive AI use may reduce students' independent problem-solving practice.                      & E005 & Research & Moderate\\\\\n\t A006 & Against & Assessment         & AI use may make it more difficult to determine whether submitted work reflects student learning. & E006 & Research & Strong  \\\\\n\t A007 & Against & Data Analyisys     & AI helps Data Analyst to make the data more concrete                                             & E007 & Policy   & Strong  \\\\\n\\end{tabular}\n",
+            "text/plain": [
+              "  ArgumentsID Position Topic             \n",
+              "1 A001        For      Learning          \n",
+              "2 A002        For      Productivity      \n",
+              "3 A003        For      AI Literacy       \n",
+              "4 A004        Against  Academic Integrity\n",
+              "5 A005        Against  Dependency        \n",
+              "6 A006        Against  Assessment        \n",
+              "7 A007        Against  Data Analyisys    \n",
+              "  Claim                                                                                           \n",
+              "1 AI can provide students with learning support.                                                  \n",
+              "2 AI can help students complete routine academic task more efficiently                            \n",
+              "3 Allowing AI use can help students develop AI literacy.                                          \n",
+              "4 Undisclose AI generated work may create academic integrity concerns.                            \n",
+              "5 Excessive AI use may reduce students' independent problem-solving practice.                     \n",
+              "6 AI use may make it more difficult to determine whether submitted work reflects student learning.\n",
+              "7 AI helps Data Analyst to make the data more concrete                                            \n",
+              "  EvidenceID EvidenceType Strength\n",
+              "1 E001       Research     Strong  \n",
+              "2 E002       Research     Moderate\n",
+              "3 E003       Policy       Strong  \n",
+              "4 E004       Policy       Strong  \n",
+              "5 E005       Research     Moderate\n",
+              "6 E006       Research     Strong  \n",
+              "7 E007       Policy       Strong  "
+            ]
+          },
+          "metadata": {}
+        }
+      ]
+    }
+  ]
+}
